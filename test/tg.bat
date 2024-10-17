@@ -41,7 +41,7 @@ set tmpprogram=_getcompilerversion.tmp
 set tmpsource=%tmpprogram%.c
 
 echo #include ^<stdio.h^>     > %tmpsource%
-echo int main(){printf("%%d.%%d.%%d\n",__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__);} >> %tmpsource%
+echo int main(void){printf("%%d.%%d.%%d\n",__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__);} >> %tmpsource%
 
 %gpp% -o %tmpprogram% %tmpsource% >nul
 for /f %%x in ('%tmpprogram%') do set version=%%x

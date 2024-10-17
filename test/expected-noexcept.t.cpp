@@ -57,7 +57,7 @@ int violate_access()
     return eu.value();
 }
 
-int main()
+int main(void)
 {
     report();
 

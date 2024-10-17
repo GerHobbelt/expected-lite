@@ -39,7 +39,7 @@ set tmpprogram=_getcompilerversion.tmp
 set tmpsource=%tmpprogram%.c
 
 echo #include ^<stdio.h^>     > %tmpsource%
-echo int main(){printf("%%d.%%d.%%d\n",__clang_major__,__clang_minor__,__clang_patchlevel__);} >> %tmpsource%
+echo int main(void){printf("%%d.%%d.%%d\n",__clang_major__,__clang_minor__,__clang_patchlevel__);} >> %tmpsource%
 
 "%clang%" -m32 -o %tmpprogram% %tmpsource% >nul
 for /f %%x in ('%tmpprogram%') do set version=%%x

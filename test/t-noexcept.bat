@@ -46,7 +46,7 @@ set tmpprogram=_getcompilerversion.tmp
 set tmpsource=%tmpprogram%.c
 
 echo #include ^<stdio.h^>                   >%tmpsource%
-echo int main(){printf("%%d\n",_MSC_VER);} >>%tmpsource%
+echo int main(void){printf("%%d\n",_MSC_VER);} >>%tmpsource%
 
 cl /nologo %tmpsource% >nul
 for /f %%x in ('%tmpprogram%') do set version=%%x
