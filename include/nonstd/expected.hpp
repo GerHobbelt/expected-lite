@@ -81,6 +81,14 @@
 # define nsel_P2505R  5
 #endif
 
+// Lean and mean inclusion of Windows.h, if applicable; default on for MSVC:
+
+#if !defined(nsel_CONFIG_WIN32_LEAN_AND_MEAN) && defined(_MSC_VER)
+# define nsel_CONFIG_WIN32_LEAN_AND_MEAN  1
+#else
+# define nsel_CONFIG_WIN32_LEAN_AND_MEAN  0
+#endif
+
 // Control presence of C++ exception handling (try and auto discover):
 
 #ifndef nsel_CONFIG_NO_EXCEPTIONS
@@ -96,8 +104,10 @@
 
 // at default use SEH with MSVC for no C++ exceptions
 
-#ifndef  nsel_CONFIG_NO_EXCEPTIONS_SEH
-# define nsel_CONFIG_NO_EXCEPTIONS_SEH  ( nsel_CONFIG_NO_EXCEPTIONS && _MSC_VER )
+#if !defined(nsel_CONFIG_NO_EXCEPTIONS_SEH) && defined(_MSC_VER)
+# define nsel_CONFIG_NO_EXCEPTIONS_SEH  nsel_CONFIG_NO_EXCEPTIONS
+#else
+# define nsel_CONFIG_NO_EXCEPTIONS_SEH  0
 #endif
 
 // C++ language version detection (C++23 is speculative):
@@ -248,6 +258,19 @@ namespace nonstd {
     {
         return unexpected< typename std::decay<E>::type >( std::forward<E>(value) );
     }
+
+    template
+    <
+        typename E, typename... Args,
+        typename = std::enable_if<
+            std::is_constructible<E, Args...>::value
+        >
+    >
+    constexpr auto
+    make_unexpected( std::in_place_t inplace, Args &&... args ) -> unexpected_type< typename std::decay<E>::type >
+    {
+        return unexpected_type< typename std::decay<E>::type >( inplace, std::forward<Args>(args)...);
+    }
 }  // namespace nonstd
 
 #else // nsel_USES_STD_EXPECTED
@@ -263,6 +286,12 @@ namespace nonstd {
 #include <utility>
 
 // additional includes:
+
+#if nsel_CONFIG_WIN32_LEAN_AND_MEAN
+# ifndef  WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+#endif
 
 #if nsel_CONFIG_NO_EXCEPTIONS
 # if nsel_CONFIG_NO_EXCEPTIONS_SEH
@@ -1575,9 +1604,9 @@ template
     >
 >
 nsel_constexpr14 auto
-make_unexpected( in_place_t inplace, Args... args ) -> unexpected_type< typename std::decay<E> >
+make_unexpected( nonstd_lite_in_place_t(E), Args &&... args ) -> unexpected_type< typename std::decay<E>::type >
 {
-    return unexpected_type< typename std::decay<E>::type >( inplace, std::forward<Args>(args)...);
+    return std::move( unexpected_type< typename std::decay<E>::type >( nonstd_lite_in_place(E), std::forward<Args>(args)...) );
 }
 
 #if nsel_P0323R <= 3
