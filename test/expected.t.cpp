@@ -240,62 +240,87 @@ CASE( "unexpected_type: Allows to move-construct from error_type" )
 
 CASE( "unexpected_type: Allows to copy-construct from unexpected_type, explicit converting" )
 {
+#if !nsel_USES_STD_EXPECTED // TODO
     unexpected_type<int> a{ 7 };
 
     unexpected_type<Explicit> b{ a };
 
     EXPECT( b.error() == Explicit{7} );
+#else
+    EXPECT( !!"no explicit converting copy-construct for std::unexpected (C++23)." "TODO" );
+#endif
 }
 
 CASE( "unexpected_type: Allows to copy-construct from unexpected_type, non-explicit converting" )
 {
+#if !nsel_USES_STD_EXPECTED // TODO
     unexpected_type<int> a{ 7 };
 
     unexpected_type<Implicit> b( a );
 
     EXPECT( b.error() == Implicit{7} );
+#else
+    EXPECT( !!"no non-explicit converting copy-construct for std::unexpected (C++23)." "TODO" );
+#endif
 }
 
 CASE( "unexpected_type: Allows to move-construct from unexpected_type, explicit converting" )
 {
+#if !nsel_USES_STD_EXPECTED // TODO
     unexpected_type<int> a{ 7 };
 
     unexpected_type<Explicit> b{ std::move( a ) };
 
     EXPECT( b.error() == Explicit{7} );
+#else
+    EXPECT( !!"no explicit converting move-construct for std::unexpected (C++23)." "TODO" );
+#endif
 }
 
 CASE( "unexpected_type: Allows to move-construct from unexpected_type, non-explicit converting" )
 {
+#if !nsel_USES_STD_EXPECTED // TODO
     unexpected_type<int> a{ 7 };
 
     unexpected_type<Implicit> b( std::move( a ) );
 
     EXPECT( b.error() == Implicit{7} );
+#else
+    EXPECT( !!"no non-explicit converting move-construct for std::unexpected (C++23)." "TODO" );
+#endif
 }
 
 CASE( "unexpected_type: Allows to copy-assign from unexpected_type, default" )
 {
+#if !nsel_USES_STD_EXPECTED
     unexpected_type<int> a{ 7   };
     unexpected_type<int> b{ 0 };
 
     b = a;
 
     EXPECT( b.error() == 7 );
+#else
+    EXPECT( !!"no assignment for std::unexpected (C++23)." );
+#endif
 }
 
 CASE( "unexpected_type: Allows to move-assign from unexpected_type, default" )
 {
+#if !nsel_USES_STD_EXPECTED
     unexpected_type<int> a{ 7 };
     unexpected_type<int> b{ 0 };
 
     b = std::move( a );
 
     EXPECT( b.error() == 7 );
+#else
+    EXPECT( !!"no assignment for std::unexpected (C++23)." );
+#endif
 }
 
 CASE( "unexpected_type: Allows to copy-assign from unexpected_type, converting" )
 {
+#if !nsel_USES_STD_EXPECTED
     unexpected_type<int> u{ 7 };
     unexpected_type<Explicit> ue{ 0 };
     unexpected_type<Implicit> ui{ 0 };
@@ -305,10 +330,14 @@ CASE( "unexpected_type: Allows to copy-assign from unexpected_type, converting" 
 
     EXPECT( ue.error() == Explicit{7} );
     EXPECT( ui.error() == Implicit{7} );
+#else
+    EXPECT( !!"no copy-assignment for std::unexpected (C++23)." );
+#endif
 }
 
 CASE( "unexpected_type: Allows to move-assign from unexpected, converting" )
 {
+#if !nsel_USES_STD_EXPECTED
     unexpected_type<int> u{ 7 };
     unexpected_type<int> v{ 7 };
     unexpected_type<Explicit> ue{ 0 };
@@ -319,6 +348,9 @@ CASE( "unexpected_type: Allows to move-assign from unexpected, converting" )
 
     EXPECT( ue.error() == Explicit{7} );
     EXPECT( ui.error() == Implicit{7} );
+#else
+    EXPECT( !!"no move-assignment for std::unexpected (C++23)." );
+#endif
 }
 
 CASE( "unexpected_type: Allows to observe its value via a l-value reference" )
@@ -1188,18 +1220,26 @@ CASE( "expected: Allows to move its error" )
 
 CASE( "expected: Allows to observe its error as unexpected" )
 {
+#if !nsel_USES_STD_EXPECTED
     const auto v = 7;
     expected<char, Implicit> e{ unexpect, v };
 
     EXPECT( e.get_unexpected().error() == v );
+#else
+    EXPECT( !!"expected::get_unexpected() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected: Allows to query if it contains an exception of a specific base type" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<int, std::out_of_range> e{ unexpect, std::out_of_range( "oor" ) };
 
     EXPECT(  e.has_exception< std::logic_error   >() );
     EXPECT( !e.has_exception< std::runtime_error >() );
+#else
+    EXPECT( !!"expected::has_exception() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected: Allows to observe its value if available, or obtain a specified value otherwise" )
@@ -1629,18 +1669,26 @@ CASE( "expected<void>: Allows to move its error" )
 
 CASE( "expected<void>: Allows to observe its error as unexpected" )
 {
+#if !nsel_USES_STD_EXPECTED
     const auto value = 7;
     expected<void, int> e{ unexpect, value };
 
     EXPECT( e.get_unexpected().error() == value );
+#else
+    EXPECT( !!"expected::get_unexpected() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected<void>: Allows to query if it contains an exception of a specific base type" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<void, std::out_of_range> e{ unexpect, std::out_of_range( "oor" ) };
 
     EXPECT(  e.has_exception< std::logic_error   >() );
     EXPECT( !e.has_exception< std::runtime_error >() );
+#else
+    EXPECT( !!"expected::has_exception() is not available (using C++23 std::expected)" );
+#endif
 }
 
 CASE( "expected<void>: Throws bad_expected_access on value access when disengaged" )
@@ -1929,10 +1977,14 @@ CASE( "swap: Allows expected to be swapped" )
 
 CASE( "std::hash: Allows to compute hash value for expected" )
 {
+#if !nsel_USES_STD_EXPECTED
     expected<int, char> a{ 7 };
     expected<int, char> b{ 7 };
 
     EXPECT( (std::hash< expected<int, char> >{}( a )) == (std::hash< expected<int, char> >{}( b )) );
+#else
+    EXPECT( !!"std::hash<std::expected<>> is not available for std::unexpected (C++23)." );
+#endif
 }
 
 #if nsel_P0323R <= 3
