@@ -29,13 +29,11 @@
 
 // tweak header support:
 
-#ifdef __has_include
-# if __has_include(<nonstd/expected.tweak.hpp>)
-#  include <nonstd/expected.tweak.hpp>
-# endif
-#define expected_HAVE_TWEAK_HEADER  1
+#if defined(__has_include) && __has_include(<nonstd/expected.tweak.hpp>)
+# include <nonstd/expected.tweak.hpp>
+# define expected_HAVE_TWEAK_HEADER  1
 #else
-#define expected_HAVE_TWEAK_HEADER  0
+# define expected_HAVE_TWEAK_HEADER  0
 //# pragma message("expected.hpp: Note: Tweak header not supported.")
 #endif
 
